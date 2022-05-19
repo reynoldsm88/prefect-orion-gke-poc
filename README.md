@@ -238,4 +238,21 @@ prefect deployment run prefect_2_kafka_kub/gcs
 
 You should see in the prefect agent logs that it is starting a flow.
 The flow will be a kubernetes job in the namespace you have chosen.
-YOu can try to publish kafka message to the `prefect-poc` topic, it should then launch prefect tasks.
+You can try to publish kafka message to the `prefect-poc` topic, it should then launch prefect tasks.
+
+-----
+
+After digging a bit further, I have created an alternative implementation in the file 
+`prefect_2_kafka_kub_no_deployment.py`. In that one I no longer use a deployment. The kafka consumer
+is a regular long running python application. However it points to the Prefect Cloud API 
+for observability. When it receives a message, it starts a flow by calling the `@flow` annotated
+`process_message` function. This way each flow corresponds to a kafka message instead of having
+a single flow and multiple mixed tasks.
+
+To run it : 
+
+```shell
+export PREFECT_API_URL=https://api-beta.prefect.io/api/...
+export PREFECT_API_URL=xxx
+python prefect_2_kafka_kub_no_deployment.py
+```

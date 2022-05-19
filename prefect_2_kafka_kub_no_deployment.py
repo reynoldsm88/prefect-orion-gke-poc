@@ -1,13 +1,7 @@
-import io
-import json
-import os
 import sys
 
 from confluent_kafka import Consumer, KafkaError, KafkaException
 from prefect import flow, task, get_run_logger
-from prefect.blocks.storage import GoogleCloudStorageBlock
-from prefect.deployments import DeploymentSpec
-from prefect.flow_runners import KubernetesFlowRunner
 
 class TopicConsumer:
 
@@ -48,13 +42,12 @@ class TopicConsumer:
     def shutdown(self):
         self.running = False
 
-@task
+@flow(name="prefect_2_kafka_kub_no_deployment")
 def process_message(msg):
     logger = get_run_logger()
     logger.info("Received message topic={} partition={} offset={} key={} value={}".format(
         msg.topic(), msg.partition(), msg.offset(), msg.key(), msg.value()))
 
-@flow(name="prefect_2_kafka_kub")
 def main():
 
     conf = {
@@ -77,20 +70,6 @@ def main():
         process_message(msg)
 
     topic_consumer.shutdown()
-
-DeploymentSpec(
-    name="gcs",
-    flow=main,
-    tags=["kubernetes"],
-    flow_storage=GoogleCloudStorageBlock(
-        bucket="prefect-poc"
-    ),
-    flow_runner=KubernetesFlowRunner(
-        image="gcr.io/everysens-integration/prefect-poc/development:latest",
-        namespace="everysens",
-        service_account_name="prefect-orion-agent"
-    ),
-)
 
 if __name__ == '__main__':
     main()
