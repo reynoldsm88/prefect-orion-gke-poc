@@ -42,31 +42,13 @@ The manifest then needs some manual editing because :
 
 
 Let's start by adding a dedicated service account to the manifest.
-Add the following lines before the rbac objects for example.
+Add the following lines before the service account object.
 ```yaml
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prefect-orion-agent
-```
-
-Remove the orion service, it won't be needed : 
-
-```yaml
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: orion
-  labels:
-    app: orion
-spec:
-  ports:
-    - port: 4200
-      protocol: TCP
-  selector:
-    app: orion
 ```
 
 Remove the `namespace: default` from the rbac objects to allow creating 

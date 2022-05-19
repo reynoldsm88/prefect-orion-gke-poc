@@ -36,6 +36,19 @@ kind: ServiceAccount
 metadata:
   name: prefect-orion-agent
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orion
+  labels:
+    app: orion
+spec:
+  ports:
+    - port: 4200
+      protocol: TCP
+  selector:
+    app: orion
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
