@@ -27,6 +27,8 @@ spec:
         env:
           - name: PREFECT_API_URL
             value: http://orion:4200/api
+          - name: PREFECT_API_KEY
+            value: 'xxxxx'
 
 ---
 apiVersion: v1
